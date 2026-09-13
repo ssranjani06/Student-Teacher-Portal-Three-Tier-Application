@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      id-token: write
       contents: read
 
     defaults:
@@ -18,6 +19,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
