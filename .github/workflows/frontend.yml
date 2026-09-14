@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      id-token: write
       contents: read
 
     defaults:
@@ -19,12 +20,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v6
 
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v5
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_LOGIN_ROLE_NAME }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -35,6 +35,6 @@ jobs:
           context: frontend
           path: frontend/Dockerfile
           push: true
-          tags: 615299766984.dkr.ecr.us-east-1.amazonaws.com/dev/frontend:${{ github.run_number }}
+          tags: ${{ secrets.ECR_FRONTEND_REPO }}:${{ github.run_number }}
           build-args: |
             REACT_APP_API_BASE_URL=${{ secrets.API_BASE_URL }}
